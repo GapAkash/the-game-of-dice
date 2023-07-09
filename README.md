@@ -1,6 +1,6 @@
 # The Game Of Dice
 
-The "Game of Dice" is a multiplayer game where N players roll a 6-faced dice in a round-robin fashion. Each time a player rolls the dice, their points increase by the number (1 to 6) achieved by the roll.
+"The Game Of Dice" is a multiplayer game where N players roll a 6-faced dice in a round-robin fashion. Each time a player rolls the dice, their points increase by the number (1 to 6) achieved by the roll.
 
 This program allows you to simulate and play "The Game Of Dice" on the command line. Players take turns rolling the dice, accumulate points, and aim to reach a specific score to complete the game.
 
@@ -54,11 +54,7 @@ This program allows you to simulate and play "The Game Of Dice" on the command l
 
 7. Continue playing until a player reaches or exceeds the specified points required to win. The program will display a congratulations message to the winning player and terminate the game.
 
-## Customization
-
-You can customize the number of player and points to win at the start of the game.
-
-## Rule
+## Rules
 
 - The order in which the users roll the dice is decided randomly at the start of the game.
 - If a player rolls the value "6" then they immediately get another chance to roll again and move ahead in the game.
