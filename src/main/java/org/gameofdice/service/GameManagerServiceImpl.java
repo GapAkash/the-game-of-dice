@@ -64,8 +64,8 @@ public class GameManagerServiceImpl implements GameManagerService {
 		inputValidation("\n" + player.getName() + " it's your turn (press 'r' to roll the dice) : ", String.class, SCANNER);
 
 		int diceValue = rollDice();
-		System.out.println(player.getName() + " rolled " + diceValue + "; Total score: " + player.getScore());
 		player.setScore(player.getScore() + diceValue);
+		System.out.println(player.getName() + " rolled " + diceValue + "; Total score: " + player.getScore());
 
 		boolean isWon = checkIfWon(player);
 
