@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.gameofdice.model.Game;
+import org.gameofdice.model.GameStatus;
 import org.gameofdice.model.Player;
 
 public class GameManagerServiceImpl implements GameManagerService {
@@ -50,7 +51,7 @@ public class GameManagerServiceImpl implements GameManagerService {
 	}
 
 	private void playGame(Player player) {
-		if (player.getScore() >= pointsToWin) return;	// If player already won, then returning from here
+		if (player.getPlayStatus() == GameStatus.WON) return;	// If player already won, then returning from here
 
 		// condition to check for consecutive Ones 2 times
 		if (consecutiveOneRolls.get(player) == 2) {
@@ -67,11 +68,11 @@ public class GameManagerServiceImpl implements GameManagerService {
 		player.setScore(player.getScore() + diceValue);
 		System.out.println(player.getName() + " rolled " + diceValue + "; Total score: " + player.getScore());
 
-		boolean isWon = checkIfWon(player);
+		checkAndPrintIfWon(player);
 
 		printRankTable(players);
 
-		if (!isWon) {
+		if (player.getPlayStatus() == GameStatus.PLAYING) {
 			if (diceValue == 1) {
 				consecutiveOneRolls.put(player, consecutiveOneRolls.get(player) + 1);
 			} else if (diceValue == 6) {
@@ -86,15 +87,18 @@ public class GameManagerServiceImpl implements GameManagerService {
 		}
 	}
 
-	private boolean checkIfWon(Player player) {
+	private void checkAndPrintIfWon(Player player) {
 		if (player.getScore() >= pointsToWin) {
+			
+			player.setPlayStatus(GameStatus.WON);
+			int rank = completedPlayers.size() == 0 ? 1 : completedPlayers.get(completedPlayers.size() - 1).getRank() + 1;
+			player.setRank(rank);
+			
 			completedPlayers.add(player);
 			System.out.println("\n" + LINE_BREAK_1);
-			System.out.println("Congratulations, " + player.getName() + "! You completed the game with Rank " + completedPlayers.size());
+			System.out.println("Congratulations " + player.getName() + "! You completed the game with Rank " + completedPlayers.size());
 			System.out.println(LINE_BREAK_1);
-			return true;
 		}
-		return false;
 	}
 
 	private int rollDice() {
@@ -105,22 +109,22 @@ public class GameManagerServiceImpl implements GameManagerService {
 		System.out.println("\n" + LINE_BREAK_1);
 		System.out.println("Rank Table:");
 
-		int rank = 1;
 		Set<Player> rankedPlayers = new LinkedHashSet<>();
 
-		for (Player player : completedPlayers)
+		for (Player player : completedPlayers) {
 			rankedPlayers.add(player);
+		}
 
 		List<Player> sortPlayers = new ArrayList<Player>(players);
 		Collections.sort(sortPlayers, (p1, p2) -> Long.compare(p2.getScore(), p1.getScore()));
-		for (Player player : sortPlayers)
+		int rank = completedPlayers.size() == 0 ? 1 : completedPlayers.get(completedPlayers.size() - 1).getRank() + 1;
+		for (Player player : sortPlayers) {
+			if(player.getPlayStatus() == GameStatus.PLAYING) player.setRank(rank++);
 			rankedPlayers.add(player);
+		}
 
 		for (Player player : rankedPlayers)
-			if (player.getScore() >= pointsToWin)
-				System.out.println(player.getName() + " : " + player.getScore() + "\tRank: " + rank++ + " \tWON");
-			else
-				System.out.println(player.getName() + " : " + player.getScore() + "\tRank: " + rank++ + " \tPLAYING");
+			System.out.println(player);
 
 		System.out.println(LINE_BREAK_1);
 	}
