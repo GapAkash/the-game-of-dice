@@ -28,6 +28,8 @@ public class GameManagerServiceImpl implements GameManagerService {
 	private int pointsToWin;
 	private Map<Player, Integer> consecutiveOneRolls = new HashMap<>();
 	private ArrayList<Player> completedPlayers = new ArrayList<>();
+	private Map<Player, Integer> currentDiceValue = new HashMap<Player, Integer>();
+	private Map<Player, Integer> lastDicevalue = new HashMap<Player, Integer>();
 
 	@Override
 	public void startGame(Game game) {
@@ -46,6 +48,9 @@ public class GameManagerServiceImpl implements GameManagerService {
 			for (Player player : players) {
 				playGame(player);
 			}
+			lastDicevalue.putAll(currentDiceValue);
+			currentDiceValue.clear();
+			
 		}
 		System.out.println("\n" + END_MESSAGE);
 	}
@@ -66,7 +71,17 @@ public class GameManagerServiceImpl implements GameManagerService {
 
 		int diceValue = rollDice();
 		player.setScore(player.getScore() + diceValue);
+		currentDiceValue.put(player, diceValue);
 		System.out.println(player.getName() + " rolled " + diceValue + "; Total score: " + player.getScore());
+
+		if(lastDicevalue.containsKey(player) && lastDicevalue.get(player) + diceValue == 8) {
+			System.out.println(LINE_BREAK_2);
+			System.out.println("Your sum is 8, we are adding " + diceValue + " to your total score!");
+			System.out.println(LINE_BREAK_2);
+			player.setScore(player.getScore() + diceValue);
+			System.out.println("Total score: " + player.getScore());
+		}
+		
 
 		checkAndPrintIfWon(player);
 
